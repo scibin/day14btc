@@ -120,6 +120,12 @@
               "devServerTarget": "day09a:serve:production"
             }
           }
+        },
+        "deploy": {
+          "builder": "angular-cli-ghpages:deploy",
+          "options": {
+            "baseHref": "/day09a/"
+          }
         }
       }
     }
