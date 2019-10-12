@@ -1,0 +1,155 @@
+<h3>Buy/Sell Order Form</h3>
+
+<form #form="ngForm" (ngSubmit)="submitForm(form)">
+
+    <!-- Regular expression only for Singapore mobile phone numbers: (+65)8123-1234 or 81233456 or 9123-4567 -->
+    <label for='contactNumber'>Contact number: </label>
+    <mat-form-field class="contactNumber">
+        <input matInput name='contactNumber' #contactNumber="ngModel" 
+        ngModel required
+        pattern="(\(\+([0-9]{2})\))?([8-9])([0-9]{3})(-)?([0-9]{4})">
+        <mat-error *ngIf="contactNumber.invalid && (contactNumber.dirty || contactNumber.touched)">
+            <div class="errMsg" *ngIf="contactNumber.errors['required']">
+                <span>Please fill in your contact number!</span>
+            </div>
+            <div class="errMsg" *ngIf="contactNumber.errors['pattern']">
+                <span>Please fill in your number in the following format:
+                    (+65)9123-4567 or (+65)91234567 or 91234567 or 9123-4567
+                </span>
+            </div>
+        </mat-error>
+    </mat-form-field>
+    <br><br>
+
+    <!-- Accepts only alphabets with spaces. Does not accept inputs with only spaces or periods -->
+    <label for='name'>Name: </label>
+    <mat-form-field class="name">
+        <input matInput name='name' #name="ngModel" 
+        ngModel required
+        pattern="(?![\s.]+$)[a-zA-z\s]*">
+        <mat-error *ngIf="name.invalid && (name.dirty || name.touched)">
+            <div class="errMsg" *ngIf="name.errors['required']">
+                <span>Please fill in your name!</span>
+            </div>
+            <div class="errMsg" *ngIf="name.errors['pattern']">
+                <span>Please fill in a valid name!</span>
+            </div>
+        </mat-error>
+    </mat-form-field>
+    <br><br>
+
+    <label for='gender'>Gender: </label>
+    <mat-radio-group ngModel name="gender">
+        <mat-radio-button value='Male'> Male</mat-radio-button>
+        <mat-radio-button value='Female'> Female</mat-radio-button>
+    </mat-radio-group>
+    <br><br>
+
+    <label for='dateOfBirth'>Date of birth: </label>
+    <mat-form-field class="dateOfBirth">
+        <input matInput [max]='maxDate'
+        [matDatepicker]="picker1" placeholder="Choose a date"
+        name='dateOfBirth' ngModel required #dateOfBirth="ngModel">
+        <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+        <mat-datepicker #picker1></mat-datepicker>
+        <mat-error *ngIf="dateOfBirth.invalid && (dateOfBirth.dirty || dateOfBirth.touched)">
+            <div class="errMsg" *ngIf="dateOfBirth.errors['maxDate']">
+                <span>You must be more than 21 years old!</span>
+            </div>
+        </mat-error>
+    </mat-form-field>
+    <br><br>
+
+    <label for='dateOfOrder'>Order date: </label>
+    <mat-form-field class="dateOfOrder">
+        <input matInput [min]='minDate'
+        [matDatepicker]="picker2" placeholder="Choose a date"
+        name='dateOfOrder' ngModel required #dateOfOrder="ngModel">
+        <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+        <mat-datepicker #picker2></mat-datepicker>
+    </mat-form-field>
+    <br><br>
+
+    <label for='orderType'>Order type: </label>
+    <mat-radio-group [(ngModel)]='buysell' name="orderType"
+    required>
+        <mat-radio-button value='buy'> Buy</mat-radio-button>
+        <mat-radio-button value='sell'> Sell</mat-radio-button>
+    </mat-radio-group>
+    <br><br>
+    
+    <!-- USEFUL!!! One way binding + field validation -->
+    <!-- Registers both click and keypress events to trigger the calculation -->
+    <!-- regexp here: allows numbers or numbers with decimal points. However, number cannot be .X -->
+    <label for='orderUnit'>Order unit: </label>
+    <mat-form-field class="orderUnit">
+        <input matInput name='orderUnit' #orderUnit="ngModel"
+        (keyup)="calculatePrice(orderUnit)"
+        (click)="calculatePrice(orderUnit)"
+        type='text' required ngModel
+        pattern="[0-9]+\.?[0-9]*">
+        <mat-error *ngIf="orderUnit.invalid && (orderUnit.dirty || orderUnit.touched)">
+            <div class="errMsg" *ngIf="orderUnit.errors['pattern']">
+                <span>Please input a number!</span>
+            </div>
+        </mat-error>
+        <mat-error *ngIf="orderUnit.invalid && (orderUnit.dirty || orderUnit.touched)">
+            <div class="errMsg" *ngIf="orderUnit.errors['required']">
+                <span>Please input a number!</span>
+            </div>
+        </mat-error>
+    </mat-form-field>
+    <br>
+
+    <span class='cryptoPair'>Cryptocurrency pair: {{ cryptoPair }}</span>
+    <br><br>
+
+    <span class='cryptoUnitPrice'>Cryptocurrency price (SGD)</span>
+    <br>
+    <span>Ask: {{ askbidValue[0] }}</span>
+    <br>
+    <span>Bid: {{ askbidValue[1] }}</span>
+    <br>
+
+    <div class='paylah' *ngIf="buysell === 'sell'">
+        <label for='paylahCode'>Paylah code URL: </label>
+        <mat-form-field class="paylahCode">
+            <input matInput name='paylahCode' #paylahCode="ngModel"
+            ngModel required>
+            <mat-error *ngIf="paylahCode.invalid && (paylahCode.dirty || paylahCode.touched)">
+                <div class="errMsg" *ngIf="paylahCode.errors['required']">
+                    <span>Please fill in your Paylah code URL!</span>
+                </div>
+            </mat-error>
+        </mat-form-field>
+    </div>
+
+    <div class='btcadd' *ngIf="buysell == 'buy'">
+        <label for='btcAddress'>Bitcoin address: </label>
+        <mat-form-field class="btcAddress">
+            <input matInput name='btcAddress' #btcAddress="ngModel"
+            ngModel required>
+            <mat-error *ngIf="btcAddress.invalid && (btcAddress.dirty || btcAddress.touched)">
+                <div class="errMsg" *ngIf="btcAddress.errors['required']">
+                    <span>Please fill in your bitcoin address!</span>
+                </div>
+            </mat-error>
+        </mat-form-field>
+    </div>
+
+    <br>
+    <div class='askAmount' *ngIf="buysell === 'buy'">
+        <span>Total amount (Ask): {{ totalAsk }} SGD</span>
+    </div>
+    <div class='bidAmount' *ngIf="buysell === 'sell'">
+        <span>Total amount (Bid): {{ totalBid }} SGD</span>
+    </div>
+
+    <div class="forbuttons">
+        <button type="submit" [disabled]="form.invalid"
+        mat-raised-button color="primary">Order</button>
+        <button type="reset"
+        mat-raised-button color="basic">Reset</button>
+    </div>
+    <br>
+</form> 

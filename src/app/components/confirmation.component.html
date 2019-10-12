@@ -1,0 +1,71 @@
+<mat-card>
+    <span>Your order has been confirmed!</span><br>
+    <span>Order ID: {{ orderID }}</span>
+</mat-card>
+
+<div class='paylah' *ngIf="orderInfo.orderType === 'sell'">
+    <mat-card>
+        <span>Paylah code URL: </span>
+        <span>{{ orderInfo.paylahCode }}</span>
+        <br><br>
+    
+        <span>Please send your BTC to this address: </span>
+        <span>{{ custodianBTCaddress }}</span>
+        <br><br>
+
+        <span>Note: Once the BTC are wired across we will send you 
+            the SGD funds to your Paynow/Paylah bank account</span>
+        <br><br>
+
+        <span>Total amount of BTC sold: {{ totalAmount[1] }} SGD</span> 
+    </mat-card>
+</div>
+
+<div class='btcAddress' *ngIf="orderInfo.orderType === 'buy'">
+    <mat-card>
+        <span>Your BTC address: </span><br>
+        <span>{{ orderInfo.btcAddress }}</span>
+        <br><br>
+
+        <span>Please send your fiat to the following address: </span><br>
+        <img src='../../assets/bitcoin.png' width='100' height='100'>
+        <br>
+
+        <span>Note: Once the BTC are wired across we will send you 
+            the bitcoin to your wallet address</span>
+        <br><br>
+
+        <span>Total amount of BTC bought: {{ totalAmount[0] }} SGD</span>
+    </mat-card>
+</div>
+
+<mat-card>
+    <span>Contact number: {{ orderInfo.contactNumber }}</span>
+</mat-card>
+
+<mat-card>
+    <span>Date of birth: {{ dobFormat }}</span>
+</mat-card>
+
+<mat-card>
+    <span>Order date: {{ dooFormat }} {{ timeOfOrder }}</span>
+</mat-card>
+
+<mat-card>
+    <span>Gender: {{ orderInfo.gender }}</span>
+</mat-card>
+
+<mat-card>
+    <span>Buy/Sell: {{ orderInfo.orderType }}</span>
+</mat-card>
+
+<mat-card>
+    <span>Number of BTC bought/sold: {{ orderInfo.orderUnit }} BTC</span>
+</mat-card>
+
+<div class='backButton' fxLayout="row"  fxLayoutAlign="start center">
+    <button mat-icon-button aria-label="backButton" (click)="back()">
+        <mat-icon>arrow_back_ios</mat-icon>
+        <span>Back to order form</span>
+    </button>
+</div>
