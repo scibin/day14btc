@@ -10,7 +10,18 @@ import * as moment from 'moment';
 })
 export class ConfirmationComponent implements OnInit {
 
-  orderInfo: ORDER;
+  orderInfo: ORDER = {
+  // orderInfo: any = {
+    btcAddress: '1',
+    contactNumber: '1',
+    dateOfBirth: moment(),
+    dateOfOrder: moment(),
+    gender: 'male',
+    name: '1',
+    orderType: 'buy',
+    orderUnit: 0,
+    paylahCode: '1'};
+
   custodianBTCaddress = '34xp4vRoCGJym3xR7yCVPFHoCNxv4Twseo';
   totalAmount: number[];
 
@@ -21,24 +32,29 @@ export class ConfirmationComponent implements OnInit {
 
   // Need to assign this to make stuff happen in html
   orderType: string;
-  orderID: number;
+  // Changed from number to string
+  orderID: string;
 
   constructor(private btcsvc: BtcsvcService, private router: Router) { }
 
   ngOnInit() {
-    this.orderInfo = this.btcsvc.getOrder();
+    this.btcsvc.getOrder()
+    .then((result) => {
+      this.orderInfo = result;
+    })
+    console.info('This is orderInfo', this.orderInfo);
     this.totalAmount = this.btcsvc.getTotalAmount();
-    this.dobFormat = this.convertMoment(this.orderInfo.dateOfBirth);
-    this.dooFormat = this.convertMoment(this.orderInfo.dateOfOrder);
+    // this.dobFormat = this.convertMoment(this.orderInfo.dateOfBirth);
+    // this.dooFormat = this.convertMoment(this.orderInfo.dateOfOrder);
     this.timeOfOrder = moment().format('h:mm:ss a');
-    this.orderID = Math.floor(Math.random() * 100000) + 300000;
+    this.orderID = this.orderInfo.orderID;
   }
 
   back() {
     this.router.navigate(['/']);
   }
 
-  convertMoment(date: moment.Moment) {
-    return date.format('MMMM Do YYYY');
-  }
+  // convertMoment(date: moment.Moment) {
+  //   return date.format('MMMM Do YYYY');
+  // }
 }
