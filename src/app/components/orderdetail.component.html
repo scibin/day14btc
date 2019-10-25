@@ -1,0 +1,87 @@
+<h3>List details of order here</h3>
+
+<form [formGroup]="editForm" (ngSubmit)="onSubmit()">
+
+    <label for='contactNumber'>Contact number: </label>
+    <mat-form-field class="contactNumber">
+        <input matInput id='contactNumber' 
+        [formControlName]="'contactNumber'">
+    </mat-form-field>
+    <br><br>
+
+    <!-- Semi proper validation below: but doesnt work -->
+    <!-- <mat-error *ngIf="!editForm.get('username').valid && editForm.get('username').touched">
+        <span>Please fill in your name!</span>
+    </mat-error> -->
+    <label for='name'>Name: </label>
+    <mat-form-field class="name">
+        <input matInput class='name'
+        [formControlName]="'name'">
+    </mat-form-field>
+    <br><br>
+
+    <label for='gender'>Gender: </label>
+    <mat-radio-group [formControlName]="'gender'">
+        <mat-radio-button value='Male'> Male</mat-radio-button>
+        <mat-radio-button value='Female'> Female</mat-radio-button>
+    </mat-radio-group>
+    <br><br>
+
+    <label for='dateOfBirth'>Date of birth: </label>
+    <mat-form-field class="dateOfBirth">
+        <input matInput
+        [matDatepicker]="picker1" placeholder="Choose a date"
+        [formControlName]="'dateOfBirth'">
+        <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+        <mat-datepicker #picker1></mat-datepicker>
+    </mat-form-field>
+    <br><br>
+
+    <label for='dateOfOrder'>Order date: </label>
+    <mat-form-field class="dateOfOrder">
+        <input matInput
+        [matDatepicker]="picker2" placeholder="Choose a date"
+        [formControlName]="'dateOfOrder'">
+        <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+        <mat-datepicker #picker2></mat-datepicker>
+    </mat-form-field>
+    <br><br>
+
+    <label for='orderType'>Order type: </label>
+    <mat-radio-group [formControlName]="'orderType'">
+        <mat-radio-button value='buy'> Buy</mat-radio-button>
+        <mat-radio-button value='sell'> Sell</mat-radio-button>
+    </mat-radio-group>
+    <br><br>
+    
+    <label for='orderUnit'>Order unit: </label>
+    <mat-form-field class="orderUnit">
+        <input matInput type='text'
+        [formControlName]="'orderUnit'">
+    </mat-form-field>
+    <br>
+
+    <div class='paylah' *ngIf="editForm.get('orderType').value === 'sell'">
+        <label for='paylahCode'>Paylah code URL: </label>
+        <mat-form-field class="paylahCode">
+            <input matInput [formControlName]="'paylahCode'">
+        </mat-form-field>
+    </div>
+
+    <div class='btcadd' *ngIf="editForm.get('orderType').value == 'buy'">
+        <label for='btcAddress'>Bitcoin address: </label>
+        <mat-form-field class="btcAddress">
+            <input matInput [formControlName]="'btcAddress'">
+        </mat-form-field>
+    </div>
+
+    <button type="submit">Submit</button>
+</form>
+
+<div class='backButton' fxLayout="row"  fxLayoutAlign="start center">
+    <button mat-icon-button aria-label="backButton" (click)="back()">
+        <mat-icon>arrow_back_ios</mat-icon>
+        <span>Back to order form</span>
+    </button>
+</div>
+    

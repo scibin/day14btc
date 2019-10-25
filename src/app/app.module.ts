@@ -17,12 +17,18 @@ import { environment } from '../environments/environment';
 import { BtcsvcService } from './services/btcsvc.service';
 // import { RouterModule } from '@angular/router';
 import { MatMomentDateModule } from '@angular/material-moment-adapter';
+import { ListComponent } from './components/list.component';
+import { ReactiveFormsModule } from '@angular/forms';
+import { Directive, TemplateRef } from '@angular/core';
+import { OrderdetailComponent } from './components/orderdetail.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     OrderComponent,
-    ConfirmationComponent
+    ConfirmationComponent,
+    ListComponent,
+    OrderdetailComponent
   ],
   imports: [
     BrowserModule,
@@ -34,7 +40,8 @@ import { MatMomentDateModule } from '@angular/material-moment-adapter';
     HttpClientModule,
     ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
     AppRoutingModule,
-    MatMomentDateModule
+    MatMomentDateModule,
+    ReactiveFormsModule
   ],
   providers: [ BtcsvcService ],
   bootstrap: [ AppComponent ]

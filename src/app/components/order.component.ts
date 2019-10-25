@@ -54,11 +54,15 @@ export class OrderComponent implements OnInit {
 
   submitForm(event: any) {
     const temp: ORDER = event.value;
+    
+    // Randomly generate an orderID
+    temp.orderID = Math.floor(Math.random() * 1000000) + 3000000;
+    
     // Sends order data to btcsvc service for storage
     this.btcsvc.setOrder(temp);
+    
     // Sends total amount to btcsvc service for storage
     this.btcsvc.setTotalAmount([this.totalAsk, this.totalBid]);
-    this.router.navigate(['/success']);
+    this.router.navigate(['/success'], { state: { id: temp.orderID } });
   }
-
 }

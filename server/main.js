@@ -39,12 +39,38 @@ app.post('/setinfo', upload.none(), (req,res,next) => {
     })
 });
 
-// GET (giving the info)
-app.get('/getinfo', (req,res,next) => {
+// GET (gives a list of all orders)
+app.get('/getallinfo', (req,res,next) => {
     res.status(201);
     res.format({
         html: () => { res.send('HTML format not supported') },
         json: () => { res.json(JSON.stringify(btcOrderList))}
+    })
+});
+
+// GET (giving the list of a single order)
+app.get('/getsingleinfo', (req,res,next) => {
+    const id = req.query.id;
+    const orderMatched = btcOrderList.find((value) => value.orderID === id);
+    console.log('Order matched and sent', orderMatched);
+    res.status(200);
+    res.format({
+        html: () => { res.send('HTML format not supported') },
+        json: () => { res.json(JSON.stringify(orderMatched))}
+    })
+});
+
+// PUT (updates the single order)
+app.put('/updatesingleinfo',upload.none(), (req,res,next) => {
+    console.log('This is updated value: ', req.body);
+    const updatedOrderData = req.body;
+    const id = req.query.id;
+    const orderIndex = btcOrderList.findIndex((value) => value.orderID === id);
+    // Update/replace the order object
+    btcOrderList[orderIndex] = updatedOrderData;
+    res.format({
+        html: () => { res.send('HTML format not supported') },
+        json: () => { res.json({ status: 'ok' })}
     })
 });
 

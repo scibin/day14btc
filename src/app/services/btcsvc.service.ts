@@ -39,7 +39,8 @@ export class BtcsvcService {
   // Order data stored locally
   private orderInfo: ORDER[] = [];
   // Order data from server side
-  private orderInfoSS: ORDER[] = [];
+  private orderInfoSS: ORDER;
+  private orderInfoSSAll: ORDER[];
 
   // totalAmount: [ask, bid]
   private totalAmount: number[];
@@ -52,19 +53,24 @@ export class BtcsvcService {
 
   // Hardcoded URLs
   addURL = 'http://localhost:3001/setinfo';
-  getURL = 'http://localhost:3001/getinfo';
+  getURL = 'http://localhost:3001/getallinfo';
+  getSingleURL = 'http://localhost:3001/getsingleinfo';
+  updateSingleURL = 'http://localhost:3001/updatesingleinfo';
+
+  // Function takes in a moment.Moment object and returns a number (epoch time)
+  convertMomentToEpoch = (momIn: moment.Moment) => momIn.unix(); 
+
+  // Function takes in a number (epoch time) and returns a moment.Moment object
+  converEpochToMoment = (epochIn: number) => moment.unix(epochIn); 
 
   setOrder(input: ORDER) {
-    // Randomly generate an orderID
-    input.orderID = Math.floor(Math.random() * 1000000) + 3000000;
-    
-    // Intercepting dates and changing them to string
-    input.dateOfBirth = input.dateOfBirth.format('MMMM Do YYYY');
-    input.dateOfOrder = input.dateOfOrder.format('MMMM Do YYYY');
-    
-    this.orderInfo.push(input);
+    // Intercepting dates and changing them to epoch time (type number)
+    input.dateOfBirth = this.convertMomentToEpoch(input.dateOfBirth);
+    input.dateOfOrder = this.convertMomentToEpoch(input.dateOfOrder);
+
+    // this.orderInfo.push(input);
     // console.info('This is orderInfo array now: ', this.orderInfo);
-    
+
     // http post method
     const formData = new FormData();
     // Append all values in input/order
@@ -77,23 +83,64 @@ export class BtcsvcService {
     );
   }
 
-  getOrder() {
+  getListOfOrders() {
     // http get method --> get data from server
     const headers = new HttpHeaders().set('Content-Type', 'app-json');
     return(
       this.http.get<any>(this.getURL, {headers})
     .toPromise()
     .then((result) => {
-      this.orderInfoSS = JSON.parse(result);
-      console.info('This is orderInfoSS: ', this.orderInfoSS);
-      console.info(this.orderInfoSS[this.orderInfoSS.length - 1]);
+      this.orderInfoSSAll = JSON.parse(result);
       // console.info('This is type of orderInfoSS: ', typeof this.orderInfoSS);
       // console.info('This is length of orderInfoSS: ', this.orderInfoSS.length);
-      
-      // !!! Returns latest order through last entry in array. Can probably be improved
-      return this.orderInfoSS[this.orderInfoSS.length - 1];
+      return this.orderInfoSSAll;
     })
     );
+  }
+
+  getOrderDetail(servedID: string) {
+    // http get method --> get data from server
+    const paramsToServer = new HttpParams()
+    .set('id', servedID);
+    const headersToServer = new HttpHeaders().set('Content-Type', 'app-json');
+    return(
+      this.http.get<any>(this.getSingleURL, {params: paramsToServer, headers: headersToServer})
+    .toPromise()
+    .then((result) => {
+      this.orderInfoSS = JSON.parse(result);
+      // const orderMatched = this.orderInfoSS.find((value) => value.orderID === servedID)
+      // console.info('This is type of orderInfoSS: ', typeof this.orderInfoSS);
+      // console.info('This is length of orderInfoSS: ', this.orderInfoSS.length);
+      return this.orderInfoSS;
+    })
+    );
+  }
+
+  updateOrder(input: ORDER) {
+    // Converts the moment date to epoch time
+    input.dateOfBirth = this.convertMomentToEpoch(input.dateOfBirth);
+    input.dateOfOrder = this.convertMomentToEpoch(input.dateOfOrder);
+    
+    const paramsToServer = new HttpParams()
+    .set('id', input.orderID);
+    // this.orderInfo.push(input);
+    // console.info('This is orderInfo array now: ', this.orderInfo);
+
+    // http put method
+    const formData = new FormData();
+    // Append all values in input/order
+    Object.entries(input).forEach((value) => {
+      // Catches any undefined values and set them to '0'
+      if (value[1] === undefined) {
+        formData.append(value[0], '0');
+      } else {
+        formData.append(value[0], value[1].toString());
+      }
+      // Removed the .toString() portion
+      // formData.append(value[0], value[1].toString());
+    });
+    this.http.put<any>(this.updateSingleURL, formData, { params: paramsToServer })
+    .toPromise()
   }
 
   setTotalAmount(value) {

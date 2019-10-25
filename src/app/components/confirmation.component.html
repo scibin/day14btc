@@ -1,6 +1,6 @@
 <mat-card>
     <span>Your order has been confirmed!</span><br>
-    <span>Order ID: {{ orderID }}</span>
+    <span>Order ID: {{ orderInfo.orderID }}</span>
 </mat-card>
 
 <div class='paylah' *ngIf="orderInfo.orderType === 'sell'">
@@ -49,7 +49,11 @@
 </mat-card>
 
 <mat-card>
-    <span>Order date: {{ orderInfo.dateOfOrder }} {{ timeOfOrder }}</span>
+    <span>Order date: {{ orderInfo.dateOfOrder }}</span>
+</mat-card>
+
+<mat-card>
+    <span>Request processed: {{ dateOfOrderRecv }} {{ timeOfOrderRecv }}</span>
 </mat-card>
 
 <mat-card>
