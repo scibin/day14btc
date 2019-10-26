@@ -46,10 +46,6 @@ export class ConfirmationComponent implements OnInit {
     this.btcsvc.getOrderDetail(this.routedID)
     .then((result) => {
       this.orderInfo = result;
-      // Converting epoch time to moment
-      // .format('MMMM Do YYYY')
-      this.orderInfo.dateOfBirth = this.btcsvc.converEpochToMoment(this.orderInfo.dateOfBirth).format('MMMM Do YYYY');
-      this.orderInfo.dateOfOrder = this.btcsvc.converEpochToMoment(this.orderInfo.dateOfOrder).format('MMMM Do YYYY');
     })
     // console.info('This is orderInfo', this.orderInfo);
     this.totalAmount = this.btcsvc.getTotalAmount();

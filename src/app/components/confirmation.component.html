@@ -41,15 +41,19 @@
 </div>
 
 <mat-card>
+    <span>Name: {{ orderInfo.name }}</span>
+</mat-card>
+
+<mat-card>
     <span>Contact number: {{ orderInfo.contactNumber }}</span>
 </mat-card>
 
 <mat-card>
-    <span>Date of birth: {{ orderInfo.dateOfBirth }}</span>
+    <span>Date of birth: {{ orderInfo.dateOfBirth.format('MMMM Do YYYY') }}</span>
 </mat-card>
 
 <mat-card>
-    <span>Order date: {{ orderInfo.dateOfOrder }}</span>
+    <span>Order date: {{ orderInfo.dateOfOrder.format('MMMM Do YYYY') }}</span>
 </mat-card>
 
 <mat-card>

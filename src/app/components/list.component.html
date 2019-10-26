@@ -1,7 +1,24 @@
-
-<a [routerLink]="[record.orderID]" *ngFor="let record of orderList; let i = index;">
-    {{ record.orderID }}
-</a>
+<div class='orderList' *ngFor="let record of orderList; let i = index;">
+    <mat-card [routerLink]="[record.orderID]" class='singleCard'>
+        <mat-card-header fxLayout="row" fxLayoutAlign="center center" 
+        class='orderID'>
+            Order ID: {{ record.orderID }}
+        </mat-card-header>
+        <mat-card-content fxLayout="column" fxLayoutAlign="center center" >
+            <div class='name'>
+                Name: {{ record.name }}
+            </div>
+            <div>
+                Order type: {{ record.orderType }}
+            </div>
+            <div>
+                <span *ngIf="record.orderType === 'buy'">Bought</span>
+                <span *ngIf="record.orderType === 'sell'">Sold</span>
+                : {{ record.orderUnit }} BTC
+            </div>
+        </mat-card-content>
+    </mat-card>
+</div>
 
 <div class='backButton' fxLayout="row"  fxLayoutAlign="start center">
     <button mat-icon-button aria-label="backButton" (click)="back()">

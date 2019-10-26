@@ -9,6 +9,18 @@
     </mat-form-field>
     <br><br>
 
+    <!-- Contact number error messages [not working properly]
+    <mat-error *ngIf="editForm.get('contactNumber').invalid && (editForm.get('contactNumber').dirty || editForm.get('contactNumber').touched)">
+        <div class="errMsg" *ngIf="!editForm.get('contactNumber').errors['required']">
+            <span>Please fill in your contact number!</span>
+        </div>
+        <div class="errMsg" *ngIf="!editForm.get('contactNumber').errors['pattern']">
+            <span>Please fill in your number in the following format:
+                (+65)9123-4567 or (+65)91234567 or 91234567 or 9123-4567
+            </span>
+        </div>
+    </mat-error> -->
+
     <!-- Semi proper validation below: but doesnt work -->
     <!-- <mat-error *ngIf="!editForm.get('username').valid && editForm.get('username').touched">
         <span>Please fill in your name!</span>
@@ -74,8 +86,7 @@
             <input matInput [formControlName]="'btcAddress'">
         </mat-form-field>
     </div>
-
-    <button type="submit">Submit</button>
+    <button mat-flat-button color="primary" type="submit" [disabled]="!editForm.valid">Update</button>
 </form>
 
 <div class='backButton' fxLayout="row"  fxLayoutAlign="start center">

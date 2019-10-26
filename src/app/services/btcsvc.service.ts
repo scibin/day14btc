@@ -3,6 +3,7 @@ import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { map, flatMap, toArray } from 'rxjs/operators';
 import * as moment from 'moment';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export interface ORDER {
   btcAddress?: string;
@@ -37,7 +38,8 @@ export class BtcsvcService {
   //   paylahCode: ''};
 
   // Order data stored locally
-  private orderInfo: ORDER[] = [];
+  // private orderInfo: ORDER[] = [];
+
   // Order data from server side
   private orderInfoSS: ORDER;
   private orderInfoSSAll: ORDER[];
@@ -52,10 +54,12 @@ export class BtcsvcService {
   constructor(private http: HttpClient) { }
 
   // Hardcoded URLs
-  addURL = 'http://localhost:3001/setinfo';
-  getURL = 'http://localhost:3001/getallinfo';
-  getSingleURL = 'http://localhost:3001/getsingleinfo';
-  updateSingleURL = 'http://localhost:3001/updatesingleinfo';
+  baseURL = environment.api_url || 'http://localhost:3001';
+  addURL = `${this.baseURL}/setinfo`;
+  getURL = `${this.baseURL}/getallinfo`;
+  getSingleURL = `${this.baseURL}/getsingleinfo`;
+  updateSingleURL = `${this.baseURL}/updatesingleinfo`;
+  getPriceURL = `${this.baseURL}/price`;
 
   // Function takes in a moment.Moment object and returns a number (epoch time)
   convertMomentToEpoch = (momIn: moment.Moment) => momIn.unix(); 
@@ -67,9 +71,6 @@ export class BtcsvcService {
     // Intercepting dates and changing them to epoch time (type number)
     input.dateOfBirth = this.convertMomentToEpoch(input.dateOfBirth);
     input.dateOfOrder = this.convertMomentToEpoch(input.dateOfOrder);
-
-    // this.orderInfo.push(input);
-    // console.info('This is orderInfo array now: ', this.orderInfo);
 
     // http post method
     const formData = new FormData();
@@ -91,8 +92,6 @@ export class BtcsvcService {
     .toPromise()
     .then((result) => {
       this.orderInfoSSAll = JSON.parse(result);
-      // console.info('This is type of orderInfoSS: ', typeof this.orderInfoSS);
-      // console.info('This is length of orderInfoSS: ', this.orderInfoSS.length);
       return this.orderInfoSSAll;
     })
     );
@@ -108,6 +107,9 @@ export class BtcsvcService {
     .toPromise()
     .then((result) => {
       this.orderInfoSS = JSON.parse(result);
+      // Converting epoch time to moment
+      this.orderInfoSS.dateOfBirth = this.converEpochToMoment(this.orderInfoSS.dateOfBirth);
+      this.orderInfoSS.dateOfOrder = this.converEpochToMoment(this.orderInfoSS.dateOfOrder);
       // const orderMatched = this.orderInfoSS.find((value) => value.orderID === servedID)
       // console.info('This is type of orderInfoSS: ', typeof this.orderInfoSS);
       // console.info('This is length of orderInfoSS: ', this.orderInfoSS.length);
@@ -123,49 +125,58 @@ export class BtcsvcService {
     
     const paramsToServer = new HttpParams()
     .set('id', input.orderID);
-    // this.orderInfo.push(input);
-    // console.info('This is orderInfo array now: ', this.orderInfo);
 
     // http put method
     const formData = new FormData();
     // Append all values in input/order
     Object.entries(input).forEach((value) => {
-      // Catches any undefined values and set them to '0'
+      // Catches any undefined values, since toString method won't work
       if (value[1] === undefined) {
-        formData.append(value[0], '0');
+        formData.append(value[0], '');
       } else {
         formData.append(value[0], value[1].toString());
       }
-      // Removed the .toString() portion
-      // formData.append(value[0], value[1].toString());
     });
     this.http.put<any>(this.updateSingleURL, formData, { params: paramsToServer })
     .toPromise()
+  }
+
+  getPrice(): Promise<any> {
+    return(
+      this.http.get<any>(`${this.getPriceURL}?crypto=${this.coin}&fiat=${this.currencyPair}`)
+      .pipe(
+        map((v: any) => {
+          return ([v[`${this.coin}${this.currencyPair}`].ask, v[`${this.coin}${this.currencyPair}`].bid]);
+        })
+      )
+      .toPromise()
+    );
   }
 
   setTotalAmount(value) {
     this.totalAmount = value;
   }
 
+  // Get bitcoin price from backend 
   getTotalAmount() {
     return this.totalAmount;
   }
 
-  apiCall(): Promise<any> {
-    const params = new HttpParams()
-    .set('crypto', this.coin)
-    .set('fiat', this.currencyPair);
-    const headers = new HttpHeaders()
-    .set('Content-Type', 'app-json')
-    .set('X-testing', 'testing');
-    return (
-      this.http.get('https://cors-anywhere.herokuapp.com/apiv2.bitcoinaverage.com/indices/global/ticker/all', {params, headers})
-      .pipe(
-        map((v: any) => {
-          return ([v.BTCSGD.ask, v.BTCSGD.bid]);
-        })
-      )
-      .toPromise()
-    );
-  }
+  // apiCall(): Promise<any> {
+  //   const params = new HttpParams()
+  //   .set('crypto', this.coin)
+  //   .set('fiat', this.currencyPair);
+  //   const headers = new HttpHeaders()
+  //   .set('Content-Type', 'app-json')
+  //   .set('X-testing', 'testing');
+  //   return (
+  //     this.http.get('https://cors-anywhere.herokuapp.com/apiv2.bitcoinaverage.com/indices/global/ticker/all', {params, headers})
+  //     .pipe(
+  //       map((v: any) => {
+  //         return ([v.BTCSGD.ask, v.BTCSGD.bid]);
+  //       })
+  //     )
+  //     .toPromise()
+  //   );
+  // }
 }

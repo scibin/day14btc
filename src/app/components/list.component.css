@@ -1,0 +1,23 @@
+.orderList {
+    display: inline-block;
+    width: 50vw;
+    height: auto;
+}
+
+.orderID {
+    font-weight: bold;
+    margin-bottom: 3%;
+}
+
+.name {
+    word-wrap: break-word;
+}
+
+.singleCard {
+    cursor: pointer;
+
+}
+
+.singleCard:hover {
+    background-color: lightgray;
+}

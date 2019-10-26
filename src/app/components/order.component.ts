@@ -45,7 +45,8 @@ export class OrderComponent implements OnInit {
   constructor(private btcsvc: BtcsvcService, private router: Router) { }
 
   ngOnInit() {
-    this.btcsvc.apiCall()
+    // Get btc prices from API
+    this.btcsvc.getPrice()
     .then((i) => {
       this.askbidValue = i;
     });
@@ -53,16 +54,18 @@ export class OrderComponent implements OnInit {
   }
 
   submitForm(event: any) {
+    // Assigns the ORDER object from submission of the form
     const temp: ORDER = event.value;
-    
-    // Randomly generate an orderID
+
+    // Assigns to the ORDER object a randomly generated orderID
     temp.orderID = Math.floor(Math.random() * 1000000) + 3000000;
-    
-    // Sends order data to btcsvc service for storage
+
+    // Sends order data via http post
     this.btcsvc.setOrder(temp);
-    
+
     // Sends total amount to btcsvc service for storage
     this.btcsvc.setTotalAmount([this.totalAsk, this.totalBid]);
+    // Sends the orderID over to the confirmation page
     this.router.navigate(['/success'], { state: { id: temp.orderID } });
   }
 }

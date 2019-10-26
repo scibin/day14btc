@@ -21,15 +21,10 @@ export class OrderdetailComponent implements OnInit {
 
   ngOnInit() {
     this.orderID = this.activatedRoute.snapshot.params.id;
-    console.log(this.orderID);
     this.btcsvc.getOrderDetail(this.orderID)
     .then((result) => {
       this.orderSingleData = result;
-      console.log(this.orderSingleData);
-      // Change date format
-      this.orderSingleData.dateOfBirth = this.btcsvc.converEpochToMoment(this.orderSingleData.dateOfBirth);
-      this.orderSingleData.dateOfOrder = this.btcsvc.converEpochToMoment(this.orderSingleData.dateOfOrder);
-      // For reactive form, populate the values
+      // For reactive form, populate the values using patchValue
       this.editForm.patchValue({
         'btcAddress': this.orderSingleData.btcAddress,
         'contactNumber': this.orderSingleData.contactNumber,
@@ -42,26 +37,51 @@ export class OrderdetailComponent implements OnInit {
         'paylahCode': this.orderSingleData.paylahCode,
         'orderID': this.orderSingleData.orderID   
         })
+      // If it is buy, btcAddress is a required field. If it is sell, paylahCode is a required field
+      // if (this.editForm.get('orderType').value === 'buy') {
+      //   this.editForm.get('btcAddress').setValidators(Validators.required);
+      // } else {
+      //   this.editForm.get('paylahCode').setValidators(Validators.required);
+      // }
     });
 
     // For reactive form
     this.editForm = new FormGroup({
-      'btcAddress': new FormControl(null, Validators.required),
-      'contactNumber': new FormControl(null, Validators.required),
+      'btcAddress': new FormControl(null),
+      'contactNumber': new FormControl(null, [Validators.required, Validators.pattern('(?=.*[0-9])[- +()0-9]+')]),
       'dateOfBirth': new FormControl(null, Validators.required),
       'dateOfOrder': new FormControl(null, Validators.required),
       'gender': new FormControl(null, Validators.required),
       'name': new FormControl(null, Validators.required),
       'orderType': new FormControl(null, Validators.required),
       'orderUnit': new FormControl(null, Validators.required),
-      'paylahCode': new FormControl(null, Validators.required),
+      'paylahCode': new FormControl(null),
       'orderID': new FormControl(null, Validators.required)
     });
   }
 
+  // Adds/removes validators of paylahCode and btcAddress depending on whether buy or sell is pressed
+  // orderTypeToggler() {
+  //   if (this.editForm.get('orderType').value === 'buy') {
+  //     // btcAddress required paylahCode remove
+  //     if (!this.editForm.get('btcAddress').validator) {this.editForm.get('btcAddress').setValidators(Validators.required)}
+  //     if (this.editForm.get('paylahCode').validator) {this.editForm.get('paylahCode').clearValidators()}
+  //   } else {
+  //     // btcAddress remove paylahCode required
+  //     if (this.editForm.get('btcAddress').validator) {this.editForm.get('btcAddress').clearValidators()}
+  //     if (!this.editForm.get('paylahCode').validator) {this.editForm.get('paylahCode').setValidators(Validators.required)}
+  //   }
+  // }
+  // Reactive form validator functions
+  // forbiddenNumbers(control: FormControl): {[s: string]: Boolean} {
+  //   if () {
+  //     return;
+  //   }
+  //   return null;
+  // }
+
   // For reactive form
   onSubmit() {
-    console.log(this.editForm);
     const updatedData = this.editForm.value;
     this.btcsvc.updateOrder(updatedData);
     this.router.navigate(['/success'], { state: { id: updatedData.orderID } });
